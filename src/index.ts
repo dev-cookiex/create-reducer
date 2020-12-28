@@ -7,10 +7,13 @@ export interface AnyAction {
 }
 
 const combineReducers = <T, A>(
-  map: { [K in keyof T]: ( state: T[K], action: A ) => T[K] }
+  map: { [K in keyof T]: ( state: T[K], action: A ) => T[K] },
+  nullish: boolean = false
 ): ( state: T, action: A ) => T => {
   const reducers = Object.entries<( state: any, action: any ) => any>( map )
   return ( state, action ) => {
+    if ( nullish && !state ) return state
+
     let newerState = state
 
     for ( const [ key, reducer ] of reducers ) {
@@ -33,8 +36,6 @@ type Configuration<T, A> =
   }
 
 interface createReducer {
-  DEFAULT: typeof DEFAULT
-  COMPOSE: typeof COMPOSE
   <T, A, Act extends AnyAction = AnyAction>(
     config: Configuration<T, A>
   ): ( state: T, action: Act ) => T
@@ -48,7 +49,11 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
     ...Object.getOwnPropertySymbols( config )
   ].filter( privateFilter ) as ( keyof A )[]
 
-  const sub = COMPOSE in config && [
+  const composeIsNullish = COMPOSE_NULLISH in config
+
+  const hasCompose = composeIsNullish || COMPOSE in config
+
+  const sub = hasCompose && [
     ...Object.getOwnPropertyNames( config[COMPOSE] ),
     ...Object.getOwnPropertySymbols( config[COMPOSE] )
   ].reduce(
@@ -56,7 +61,7 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
     {} as any
   )
 
-  const combine = COMPOSE in config && combineReducers<any, any>( sub )
+  const combine = COMPOSE in config && combineReducers<any, any>( sub, composeIsNullish )
 
   const reducer = ( state: T, action: Act ) => {
     const key = keys.find( key => key === action.type )
@@ -82,25 +87,12 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
 
 export const COMPOSE = Symbol( 'store-reducer-compose' )
 
+export const COMPOSE_NULLISH = Symbol( 'store-reducer-compose-nullish' )
+
 export const DEFAULT = Symbol( 'store-reducer-default' )
 
 const privateKeys = [ COMPOSE, DEFAULT ]
 
 const privateFilter = ( key: string | symbol ) => !privateKeys.includes( key as symbol )
 
-createReducer.COMPOSE = COMPOSE
-
-createReducer.DEFAULT = DEFAULT
-
 export default createReducer
-
-interface State {
-  user: {
-    name: string
-  }
-}
-interface Actions {
-  INSEGURE_MERGE: void
-  INCREMENT: void
-}
-
