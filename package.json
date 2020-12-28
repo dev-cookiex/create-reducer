@@ -1,0 +1,20 @@
+{
+  "name": "@cookiex/create-reducer",
+  "version": "0.0.0",
+  "description": "Tool to create quick reducer",
+  "main": "dist/index.js",
+  "repository": "https://github.com/dev-cookiex/create-reducer.git",
+  "author": "Tony <tony.js@zoho.eu>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist; tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "@cookiex/dot-object": "^0.0.1-b0e86f9.0"
+  }
+}
