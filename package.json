@@ -1,6 +1,6 @@
 {
   "name": "@cookiex/create-reducer",
-  "version": "0.0.1-19b0918.0",
+  "version": "0.0.1-26a8d6d.0",
   "description": "Tool to create quick reducer",
   "main": "dist/index.js",
   "repository": "https://github.com/dev-cookiex/create-reducer.git",
