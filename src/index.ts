@@ -28,12 +28,11 @@ const combineReducers = <T, A>(
 
 type Configuration<T, A> =
   & { [K in keyof A]?: ( state: T, data: A[K] ) => T }
-  & {
-    [DEFAULT]?: ( state: T ) => T
-    [COMPOSE]?: T extends object ? {
-      [K in keyof T]?: Configuration<T[K], A>
-    } : undefined
-  }
+  & (
+    | { [DEFAULT]?: ( state: T ) => T }
+    | { [COMPOSE]?: T extends object ? { [K in keyof T]?: Configuration<T[K], A> } : undefined }
+    | { [COMPOSE_NULLISH]?: T extends object ? { [K in keyof T]?: Configuration<T[K], A> } : undefined }
+  )
 
 interface createReducer {
   <T, A, Act extends AnyAction = AnyAction>(
