@@ -53,8 +53,8 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
   const hasCompose = composeIsNullish || COMPOSE in config
 
   const sub = hasCompose && [
-    ...Object.getOwnPropertyNames( config[COMPOSE] ),
-    ...Object.getOwnPropertySymbols( config[COMPOSE] )
+    ...Object.getOwnPropertyNames( config[COMPOSE || COMPOSE_NULLISH] ),
+    ...Object.getOwnPropertySymbols( config[COMPOSE || COMPOSE_NULLISH] )
   ].reduce(
     ( reducers, key ) => ( { ...reducers, [key]: createReducer( config[COMPOSE][key] ) } ),
     {} as any
