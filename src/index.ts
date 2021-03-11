@@ -1,5 +1,5 @@
 import pick from '@cookiex/dot-object/dist/pick'
-
+import set from '@cookiex/dot-object/dist/set'
 
 export interface AnyAction {
   type: any
@@ -93,7 +93,7 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
 
     if ( action.target ) {
       const target = pick( action.target, reducer )
-      if ( target ) return target( pick( action.target, state ), action )
+      if ( target ) return set( action.target as string, state, target( pick( action.target, state ), action ) )
     }
 
     if ( key in config ) return config[key]( state, action.data )
