@@ -55,8 +55,9 @@ type Configuration<T, A, Act extends AnyAction, C extends keyof A | null = null>
 
 interface createReducer {
   <T, A, Act extends AnyAction = AnyAction>(
-    config: Configuration<T, A, Act>
-  ): ( state: T, action: Act ) => T
+    config: Configuration<T, A, Act>,
+    initialState: T
+  ): ( state: T | undefined, action: Act ) => T
 }
 
 const extractKeys = <T>( data: T ): ( keyof T )[] => [
@@ -65,7 +66,8 @@ const extractKeys = <T>( data: T ): ( keyof T )[] => [
 ] as ( keyof T )[]
 
 const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
-  config: Configuration<T, A, Act>
+  config: Configuration<T, A, Act>,
+  initialState: T
 ) => {
   const keys = extractKeys( config ).filter( privateFilter ) as ( KeyOfConfiguration<T, A, Act> )[]
 
@@ -81,14 +83,14 @@ const createReducer: createReducer = <T, A, Act extends AnyAction = AnyAction>(
   ].reduce(
     ( reducers, key ) => ( {
       ...reducers,
-      [key]: createReducer( config[composeKey][key] )
+      [key]: createReducer( config[composeKey][key], initialState[key] )
     } ),
     {} as any
   )
 
   const combine = COMPOSE in config && combineReducers<any, any>( sub, composeIsNullish )
 
-  const reducer = ( state: T, action: Act ) => {
+  const reducer = ( state: T = initialState, action: Act ) => {
     const key = keys.find( key => key === action.type )
 
     if ( action.target ) {
