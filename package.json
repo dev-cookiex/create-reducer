@@ -8,8 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist; tsc",
-    "prepublishOnly": "yarn run upgrade-version && yarn build",
-    "upgrade-version": "npm version prerelease --preid $(git rev-parse --short HEAD)"
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "ts-node": "^9.1.1",
